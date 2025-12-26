@@ -16,6 +16,8 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Email</th>
+                <th>Mobile</th>
                 <th>Status</th>
                 <th>Actions</th>
             </tr>
@@ -26,6 +28,8 @@
                 <td style="font-weight: 600;">{{ item.name }}</td>
                 <td style="color: var(--text-muted);">{{ item.description|truncatewords:10 }}</td>
                 <td><span style="color: var(--success); font-weight: 600;">${{ item.price }}</span></td>
+                <td style="color: var(--text-muted);">{{ item.email|default:"-" }}</td>
+                <td style="color: var(--text-muted);">{{ item.mobile_number|default:"-" }}</td>
                 <td>
                     {% if item.status == 'published' %}
                     <span class="badge"
