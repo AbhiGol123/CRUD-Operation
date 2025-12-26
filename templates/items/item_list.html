@@ -1,0 +1,47 @@
+{% extends 'items/base.html' %}
+
+{% block title %}Items List - Inventory Systems{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1>Items</h1>
+    <span class="badge">{{ items.count }} Total Items</span>
+</div>
+
+<div class="card">
+    {% if items %}
+    <table>
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Description</th>
+                <th>Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in items %}
+            <tr>
+                <td style="font-weight: 600;">{{ item.name }}</td>
+                <td style="color: var(--text-muted);">{{ item.description|truncatewords:10 }}</td>
+                <td><span style="color: var(--success); font-weight: 600;">${{ item.price }}</span></td>
+                <td>
+                    <div class="actions">
+                        <a href="{% url 'item_update' item.pk %}" class="btn"
+                            style="background: rgba(99, 102, 241, 0.1); color: var(--primary);">Edit</a>
+                        <a href="{% url 'item_delete' item.pk %}" class="btn"
+                            style="background: rgba(239, 68, 68, 0.1); color: var(--danger);">Delete</a>
+                    </div>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <div style="text-align: center; padding: 3rem 0;">
+        <p style="color: var(--text-muted); margin-bottom: 1.5rem;">No items found in your inventory.</p>
+        <a href="{% url 'item_create' %}" class="btn btn-primary">Create Your First Item</a>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
