@@ -16,6 +16,7 @@
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
+                <th>Status</th>
                 <th>Actions</th>
             </tr>
         </thead>
@@ -25,6 +26,15 @@
                 <td style="font-weight: 600;">{{ item.name }}</td>
                 <td style="color: var(--text-muted);">{{ item.description|truncatewords:10 }}</td>
                 <td><span style="color: var(--success); font-weight: 600;">${{ item.price }}</span></td>
+                <td>
+                    {% if item.status == 'published' %}
+                    <span class="badge"
+                        style="background: rgba(34, 197, 94, 0.1); color: var(--success);">Published</span>
+                    {% else %}
+                    <span class="badge"
+                        style="background: rgba(100, 116, 139, 0.1); color: var(--text-muted);">Draft</span>
+                    {% endif %}
+                </td>
                 <td>
                     <div class="actions">
                         <a href="{% url 'item_update' item.pk %}" class="btn"

@@ -10,9 +10,17 @@
         <form method="post">
             {% csrf_token %}
             {% for field in form %}
-            <div class="form-group">
+            <div class="form-group {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">
+                {% if field.field.widget.input_type == 'checkbox' %}
+                <div style="display: flex; align-items: center; gap: 0.5rem;">
+                    {{ field }}
+                    <label for="{{ field.id_for_label }}" style="margin-bottom: 0;">{{ field.label }}</label>
+                </div>
+                {% else %}
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
                 {{ field }}
+                {% endif %}
+
                 {% if field.errors %}
                 <ul style="color: var(--danger); font-size: 0.8rem; margin-top: 0.5rem;">
                     {% for error in field.errors %}
@@ -23,7 +31,10 @@
             </div>
             {% endfor %}
             <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <button type="submit" class="btn btn-primary" style="flex: 2;">Save Item</button>
+                <button type="submit" name="publish" class="btn btn-primary" style="flex: 2;">Save & Publish</button>
+                <button type="submit" name="draft" class="btn"
+                    style="flex: 1; background: rgba(100, 116, 139, 0.1); color: var(--text-muted);">Save as
+                    Draft</button>
                 <a href="{% url 'item_list' %}" class="btn"
                     style="flex: 1; text-align: center; background: var(--border);">Cancel</a>
             </div>

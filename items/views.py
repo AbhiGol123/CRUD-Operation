@@ -11,7 +11,12 @@ def item_create(request):
     if request.method == 'POST':
         form = ItemForm(request.POST)
         if form.is_valid():
-            form.save()
+            item = form.save(commit=False)
+            if 'draft' in request.POST:
+                item.status = 'draft'
+            else:
+                item.status = 'published'
+            item.save()
             return redirect('item_list')
     else:
         form = ItemForm()
@@ -22,7 +27,12 @@ def item_update(request, pk):
     if request.method == 'POST':
         form = ItemForm(request.POST, instance=item)
         if form.is_valid():
-            form.save()
+            item = form.save(commit=False)
+            if 'draft' in request.POST:
+                item.status = 'draft'
+            else:
+                item.status = 'published'
+            item.save()
             return redirect('item_list')
     else:
         form = ItemForm(instance=item)
