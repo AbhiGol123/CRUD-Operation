@@ -7,14 +7,29 @@
     <h1 style="margin-bottom: 2rem; text-align: center;">{{ title }}</h1>
 
     <div class="card">
-        <form method="post">
+        <form method="post" enctype="multipart/form-data">
             {% csrf_token %}
+
+            {# --- Item Fields --- #}
             {% for field in form %}
             <div class="form-group {% if field.field.widget.input_type == 'checkbox' %}form-check{% endif %}">
-                {% if field.field.widget.input_type == 'checkbox' %}
+                {% if field.name == 'image' %}
+                <label for="{{ field.id_for_label }}">{{ field.label }}</label>
+                <div class="image-upload-wrapper">
+                    {{ field }}
+                    <div id="image-preview-container"
+                        class="preview-box {% if not form.instance.image %}hidden{% endif %}">
+                        <img id="image-preview"
+                            src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}" alt="Preview">
+                        <span id="clear-image-btn" class="clear-icon" title="Remove Image">&times;</span>
+                    </div>
+                </div>
+                {% elif field.field.widget.input_type == 'checkbox' %}
                 <div style="display: flex; align-items: center; gap: 0.5rem;">
                     {{ field }}
-                    <label for="{{ field.id_for_label }}" style="margin-bottom: 0;">{{ field.label }}</label>
+                    <label for="{{ field.id_for_label }}" style="margin-bottom: 0;">
+                        {{ field.label }}
+                    </label>
                 </div>
                 {% else %}
                 <label for="{{ field.id_for_label }}">{{ field.label }}</label>
@@ -30,15 +45,245 @@
                 {% endif %}
             </div>
             {% endfor %}
+
+            {# --- Dynamic Questions Section --- #}
+            <div style="margin-top: 2rem; border-top: 1px solid var(--border); padding-top: 2rem;">
+                <h3 style="margin-bottom: 1rem;">Poll Questions</h3>
+
+                <input type="hidden" name="questions_json" id="questions_json">
+
+                <div id="questions-container"></div>
+
+                <button type="button" id="add-question-btn" class="btn" style="margin-top: 1rem; background: var(--bg-body);
+                           border: 1px dashed var(--border);
+                           width: 100%; color: var(--text-muted);">
+                    + Add Question
+                </button>
+            </div>
+
+            {# --- Form Actions --- #}
             <div style="display: flex; gap: 1rem; margin-top: 2rem;">
-                <button type="submit" name="publish" class="btn btn-primary" style="flex: 2;">Save & Publish</button>
-                <button type="submit" name="draft" class="btn"
-                    style="flex: 1; background: rgba(100, 116, 139, 0.1); color: var(--text-muted);">Save as
-                    Draft</button>
+                <button type="submit" name="publish" class="btn btn-primary" style="flex: 2;">
+                    Save & Publish
+                </button>
+                <button type="submit" name="draft" class="btn" style="flex: 1; background: rgba(100,116,139,0.1);
+                                color: var(--text-muted);">
+                    Save as Draft
+                </button>
                 <a href="{% url 'item_list' %}" class="btn"
-                    style="flex: 1; text-align: center; background: var(--border);">Cancel</a>
+                    style="flex: 1; text-align: center; background: var(--border);">
+                    Cancel
+                </a>
             </div>
         </form>
     </div>
 </div>
+
+<style>
+    .image-upload-wrapper {
+        position: relative;
+        font-size: 0;
+    }
+
+    .image-upload-wrapper input[type="file"] {
+        font-size: 1rem;
+        display: block;
+        width: 100%;
+    }
+
+    .image-upload-wrapper label,
+    .image-upload-wrapper input[name$="-clear"],
+    .image-upload-wrapper a,
+    .image-upload-wrapper br {
+        display: none !important;
+    }
+
+    .preview-box {
+        position: relative;
+        display: inline-block;
+        margin-top: 10px;
+        border-radius: 8px;
+    }
+
+    .preview-box.hidden {
+        display: none;
+    }
+
+    .preview-box img {
+        max-width: 200px;
+        max-height: 200px;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        display: block;
+    }
+
+    .clear-icon {
+        position: absolute;
+        top: -8px;
+        right: -8px;
+        background: #ff4d4d;
+        color: white;
+        width: 22px;
+        height: 22px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: bold;
+        border: 2px solid white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        z-index: 10;
+        line-height: 1;
+        font-size: 16px;
+    }
+
+    .question-block {
+        background: var(--bg-body);
+        padding: 1.5rem;
+        border-radius: 8px;
+        border: 1px solid var(--border);
+        margin-bottom: 1.5rem;
+        position: relative;
+    }
+
+    .remove-question {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        color: var(--danger);
+        cursor: pointer;
+        background: none;
+        border: none;
+        font-size: 1.2rem;
+    }
+
+    .option-row {
+        display: flex;
+        gap: 0.5rem;
+        margin-bottom: 0.5rem;
+        align-items: center;
+    }
+
+    .remove-option {
+        color: var(--danger);
+        cursor: pointer;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    /* ---------- Image Logic ---------- */
+    const imageInput = document.querySelector('input[type="file"]');
+    const imagePreview = document.getElementById('image-preview');
+    const previewContainer = document.getElementById('image-preview-container');
+    const clearBtn = document.getElementById('clear-image-btn');
+    const clearCheckbox = document.querySelector('input[name="image-clear"]');
+
+    if (imageInput) {
+        imageInput.addEventListener('change', e => {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = ev => {
+                    imagePreview.src = ev.target.result;
+                    previewContainer.classList.remove('hidden');
+                    if (clearCheckbox) clearCheckbox.checked = false;
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    if (clearBtn) {
+        clearBtn.addEventListener('click', () => {
+            if (clearCheckbox) clearCheckbox.checked = true;
+            imageInput.value = '';
+            previewContainer.classList.add('hidden');
+            imagePreview.src = '';
+        });
+    }
+
+    /* ---------- Questions Logic ---------- */
+    /* ✅ FIXED LINE — NO TEMPLATE ERROR */
+    let questionsData = {{ questions_data| safe }};
+
+    const container = document.getElementById('questions-container');
+    const addQBtn = document.getElementById('add-question-btn');
+    const form = document.querySelector('form');
+    const hiddenInput = document.getElementById('questions_json');
+
+    function renderQuestions() {
+        container.innerHTML = '';
+        questionsData.forEach((q, qi) => {
+            const block = document.createElement('div');
+            block.className = 'question-block';
+
+            let optionsHtml = q.options.map((o, oi) => `
+            <div class="option-row">
+                <input class="form-control o-text" value="${o}" placeholder="Option ${oi + 1}">
+                ${q.options.length > 2 ? `<span class="remove-option" onclick="removeOption(${qi},${oi})">&times;</span>` : ''}
+            </div>
+        `).join('');
+
+            block.innerHTML = `
+            ${questionsData.length > 1 ? `<button type="button" class="remove-question"
+                onclick="removeQuestion(${qi})">&times;</button>` : ''}
+            <label>Question ${qi + 1}</label>
+            <input class="form-control q-text" value="${q.text}">
+            ${optionsHtml}
+            <button type="button" class="btn" onclick="addOption(${qi})">+ Add Option</button>
+        `;
+            container.appendChild(block);
+        });
+    }
+
+    function saveDom() {
+        questionsData = [];
+        document.querySelectorAll('.question-block').forEach(b => {
+            questionsData.push({
+                text: b.querySelector('.q-text').value,
+                options: [...b.querySelectorAll('.o-text')].map(o => o.value)
+            });
+        });
+    }
+
+    window.addQuestion = () => {
+        saveDom();
+        questionsData.push({ text: '', options: ['', ''] });
+        renderQuestions();
+    };
+
+    window.removeQuestion = i => {
+        saveDom();
+        if (questionsData.length > 1) {
+            questionsData.splice(i, 1);
+            renderQuestions();
+        }
+    };
+
+    window.addOption = i => {
+        saveDom();
+        questionsData[i].options.push('');
+        renderQuestions();
+    };
+
+    window.removeOption = (qi, oi) => {
+        saveDom();
+        if (questionsData[qi].options.length > 2) {
+            questionsData[qi].options.splice(oi, 1);
+            renderQuestions();
+        }
+    };
+
+    addQBtn.onclick = addQuestion;
+
+    form.onsubmit = () => {
+        saveDom();
+        hiddenInput.value = JSON.stringify(questionsData);
+    };
+
+    if (!questionsData.length) addQuestion();
+    else renderQuestions();
+</script>
 {% endblock %}

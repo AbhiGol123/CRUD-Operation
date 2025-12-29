@@ -6,6 +6,7 @@ class Item(models.Model):
     price = models.DecimalField(max_digits=10, decimal_places=2)
     email = models.EmailField(max_length=255, blank=True, null=True)
     mobile_number = models.CharField(max_length=15, blank=True, null=True)
+    image = models.ImageField(upload_to='items/', blank=True, null=True)
     STATUS_CHOICES = [
         ('draft', 'Draft'),
         ('published', 'Published'),
@@ -16,3 +17,17 @@ class Item(models.Model):
 
     def __str__(self):
         return self.name
+
+class Question(models.Model):
+    item = models.ForeignKey(Item, related_name='questions', on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.text
+
+class Option(models.Model):
+    question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
+    text = models.CharField(max_length=255)
+
+    def __str__(self):
+        return self.text

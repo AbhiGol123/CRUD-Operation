@@ -3,16 +3,12 @@
 {% block title %}Items List - Inventory Systems{% endblock %}
 
 {% block content %}
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
-    <h1>Items</h1>
-    <span class="badge">{{ items.count }} Total Items</span>
-</div>
-
 <div class="card">
     {% if items %}
     <table>
         <thead>
             <tr>
+                <th>Image</th>
                 <th>Name</th>
                 <th>Description</th>
                 <th>Price</th>
@@ -25,6 +21,16 @@
         <tbody>
             {% for item in items %}
             <tr>
+                <td>
+                    {% if item.image %}
+                    <img src="{{ item.image.url }}" alt="{{ item.name }}"
+                        style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                    {% else %}
+                    <div
+                        style="width: 50px; height: 50px; background-color: #eee; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #aaa; font-size: 0.8rem;">
+                        No Img</div>
+                    {% endif %}
+                </td>
                 <td style="font-weight: 600;">{{ item.name }}</td>
                 <td style="color: var(--text-muted);">{{ item.description|truncatewords:10 }}</td>
                 <td><span style="color: var(--success); font-weight: 600;">${{ item.price }}</span></td>
