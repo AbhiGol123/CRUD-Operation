@@ -1,6 +1,8 @@
+import uuid
 from django.db import models
 
 class Questionnaire(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     STATUS_CHOICES = [
         ('active', 'Active'),
         ('inactive', 'Inactive'),
@@ -18,17 +20,23 @@ class Questionnaire(models.Model):
         return self.title
 
 class QuestionnaireQuestion(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     questionnaire = models.ForeignKey(Questionnaire, related_name='questions', on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
     emoji = models.CharField(max_length=10, default='❓')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return self.text
 
 class QuestionnaireOption(models.Model):
+    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     question = models.ForeignKey(QuestionnaireQuestion, related_name='options', on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
     emoji = models.CharField(max_length=10, default='😊')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
 
     def __str__(self):
         return f"{self.emoji} {self.text}"

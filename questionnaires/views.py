@@ -3,19 +3,19 @@ import json
 from .models import Questionnaire, QuestionnaireQuestion, QuestionnaireOption
 from .forms import QuestionnaireForm
 
-def save_questionnaire_questions(questionnaire, questions_json, db_alias='default'):
+def save_questionnaire_questions(questionnaire, questions_json):
     if not questions_json:
         return
     
     try:
         data = json.loads(questions_json)
         # Clear existing
-        QuestionnaireQuestion.objects.using(db_alias).filter(questionnaire=questionnaire).delete()
+        questionnaire.questions.all().delete()
 
         for q_data in data:
             if not q_data.get('text'):
                 continue
-            question = QuestionnaireQuestion.objects.using(db_alias).create(
+            question = QuestionnaireQuestion.objects.create(
                 questionnaire=questionnaire, 
                 text=q_data.get('text'),
                 emoji=q_data.get('emoji', '❓')
@@ -23,7 +23,7 @@ def save_questionnaire_questions(questionnaire, questions_json, db_alias='defaul
             for opt_data in q_data.get('options', []):
                 if isinstance(opt_data, dict):
                     if opt_data.get('text'):
-                        QuestionnaireOption.objects.using(db_alias).create(
+                        QuestionnaireOption.objects.create(
                             question=question, 
                             text=opt_data['text'], 
                             emoji=opt_data.get('emoji', '😊')
@@ -34,6 +34,7 @@ def save_questionnaire_questions(questionnaire, questions_json, db_alias='defaul
 def questionnaire_create(request):
     if request.method == 'POST':
         form = QuestionnaireForm(request.POST, request.FILES)
+
         if form.is_valid():
             questionnaire = form.save(commit=False)
             
@@ -44,13 +45,8 @@ def questionnaire_create(request):
                 questionnaire.status = 'active'
                 
             questionnaire.save()
-            # Save to both if that's the pattern or just default?
-            # User previously asked for both in items, I'll do default for now and see.
+
             save_questionnaire_questions(questionnaire, request.POST.get('questions_json'))
-            
-            # Also save to postgresql if you want consistency
-            questionnaire.save(using='postgresql')
-            save_questionnaire_questions(questionnaire, request.POST.get('questions_json'), 'postgresql')
             
             return redirect('questionnaire_list') 
     else:
@@ -105,10 +101,6 @@ def questionnaire_update(request, pk):
             questionnaire.save()
             save_questionnaire_questions(questionnaire, request.POST.get('questions_json'))
             
-            # postgresql sync
-            questionnaire.save(using='postgresql')
-            save_questionnaire_questions(questionnaire, request.POST.get('questions_json'), 'postgresql')
-            
             return redirect('questionnaire_list')
     else:
         form = QuestionnaireForm(instance=questionnaire)
@@ -135,7 +127,5 @@ def questionnaire_delete(request, pk):
     questionnaire = get_object_or_404(Questionnaire, pk=pk)
     if request.method == 'POST':
         questionnaire.delete()
-        # Also delete from postgresql if needed
-        Questionnaire.objects.using('postgresql').filter(pk=pk).delete()
         return redirect('questionnaire_list')
     return render(request, 'questionnaire/questionnaire_confirm_delete.html', {'questionnaire': questionnaire})

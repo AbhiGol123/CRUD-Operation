@@ -91,11 +91,22 @@ DATABASES = {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db.sqlite3',
     },
-    'postgresql': {
+    'second': {
         'ENGINE': 'django.db.backends.sqlite3',
         'NAME': BASE_DIR / 'db2.sqlite3',
+    },
+    'postgresql': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': 'questionnaires_db',
+        'USER': 'formics',
+        'PASSWORD': '',
+        'HOST': 'localhost',
+        'PORT': '5432',
     }
 }
+
+DATABASE_ROUTERS = ['crudoperation.db_router.QuestionnairesRouter']
+
 
 
 # Password validation
