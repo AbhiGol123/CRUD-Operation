@@ -21,13 +21,15 @@ class Item(models.Model):
 class Question(models.Model):
     item = models.ForeignKey(Item, related_name='questions', on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
+    emoji = models.CharField(max_length=10, default='❓')
 
     def __str__(self):
-        return self.text
+        return f"{self.emoji} {self.text}"
 
 class Option(models.Model):
     question = models.ForeignKey(Question, related_name='options', on_delete=models.CASCADE)
     text = models.CharField(max_length=255)
+    emoji = models.CharField(max_length=10, default='🔹')
 
     def __str__(self):
-        return self.text
+        return f"{self.emoji} {self.text}"

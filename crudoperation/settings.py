@@ -26,7 +26,7 @@ SECRET_KEY = 'django-insecure-aets*o)avm8i8e0#o=_zo0#j+lh5a8&wjui$npe^5!+r9t-%n*
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
-CSRF_TRUSTED_ORIGINS = ['https://e9e8d6b85bc4.ngrok-free.app']
+CSRF_TRUSTED_ORIGINS = ['https://7dc8fe66a138.ngrok-free.app']
 
 
 # Application definition
@@ -39,7 +39,18 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'items',
+    'rest_framework',
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_RENDERER_CLASSES': (
+        'rest_framework.renderers.JSONRenderer',
+    ),
+    'DEFAULT_PARSER_CLASSES': (
+        'rest_framework.parsers.JSONParser',
+    )
+}
+
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',

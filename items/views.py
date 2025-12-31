@@ -16,10 +16,22 @@ def save_questions(item, questions_json, db_alias='default'):
         for q_data in data:
             if not q_data.get('text'):
                 continue
-            question = Question.objects.using(db_alias).create(item=item, text=q_data['text'])
-            for opt_text in q_data.get('options', []):
-                if opt_text:
-                    Option.objects.using(db_alias).create(question=question, text=opt_text)
+            question = Question.objects.using(db_alias).create(
+                item=item, 
+                text=q_data.get('text'), 
+                emoji=q_data.get('emoji', '❓')
+            )
+            for opt_data in q_data.get('options', []):
+                # opt_data could be a string (old format) or dict (new format)
+                if isinstance(opt_data, dict):
+                    if opt_data.get('text'):
+                        Option.objects.using(db_alias).create(
+                            question=question, 
+                            text=opt_data['text'], 
+                            emoji=opt_data.get('emoji', '🔹')
+                        )
+                elif opt_data:
+                    Option.objects.using(db_alias).create(question=question, text=opt_data)
     except json.JSONDecodeError:
         pass
 
@@ -86,7 +98,11 @@ def item_update(request, pk):
     for q in questions:
         questions_data.append({
             'text': q.text,
-            'options': [opt.text for opt in q.options.all()]
+            'emoji': q.emoji,
+            'options': [
+                {'text': opt.text, 'emoji': opt.emoji} 
+                for opt in q.options.all()
+            ]
         })
     
     return render(request, 'items/item_form.html', {
@@ -121,7 +137,11 @@ def item_update1(request, pk):
         options = Option.objects.using('postgresql').filter(question=q)
         questions_data.append({
             'text': q.text,
-            'options': [opt.text for opt in options]
+            'emoji': q.emoji,
+            'options': [
+                {'text': opt.text, 'emoji': opt.emoji} 
+                for opt in options
+            ]
         })
 
     return render(request, 'items/item_form.html', {
