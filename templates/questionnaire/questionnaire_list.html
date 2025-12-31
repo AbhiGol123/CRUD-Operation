@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Questionnaires Panel</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #333;
+        }
+
+        .container-main {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .header-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 30px;
+        }
+
+        .page-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1a1f36;
+            margin-bottom: 5px;
+        }
+
+        .page-desc {
+            color: #697386;
+            font-size: 0.9rem;
+        }
+
+        .btn-create {
+            background-color: #1e29ff;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            text-decoration: none;
+            transition: all 0.2s;
+        }
+
+        .btn-create:hover {
+            background-color: #161fcb;
+            color: #fff;
+        }
+
+        /* Filter Section */
+        .filter-card {
+            background: #fff;
+            border: 1px solid #e3e8ee;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 40px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .search-row {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .search-input-wrapper {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-input-wrapper i {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #909399;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 10px 12px 10px 40px;
+            border: 1px solid #dcdfe6;
+            border-radius: 8px;
+            font-size: 0.9rem;
+        }
+
+        .btn-search {
+            background-color: #1e29ff;
+            color: #fff;
+            border: none;
+            padding: 0 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        .filter-row {
+            display: flex;
+            gap: 20px;
+            align-items: flex-end;
+        }
+
+        .filter-group {
+            flex: 1;
+        }
+
+        .filter-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4f566b;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .form-select,
+        .form-control {
+            border: 1px solid #dcdfe6;
+            border-radius: 8px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+            color: #4f566b;
+        }
+
+        .clear-link {
+            color: #007bff;
+            text-decoration: none;
+            font-size: 0.85rem;
+            font-weight: 500;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        /* List Section */
+        .list-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .list-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1f36;
+        }
+
+        .sort-btn {
+            background: #fff;
+            border: 1px solid #dcdfe6;
+            border-radius: 8px;
+            padding: 6px 16px;
+            font-size: 0.85rem;
+            color: #4f566b;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .table-card {
+            background: #fff;
+            border: 1px solid #e3e8ee;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table th {
+            background-color: #f9fafb;
+            color: #8792a2;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            padding: 15px 20px;
+            border-bottom: 1px solid #e3e8ee;
+        }
+
+        .table td {
+            padding: 18px 20px;
+            vertical-align: middle;
+            font-size: 0.9rem;
+            color: #1a1f36;
+            border-bottom: 1px solid #e3e8ee;
+        }
+
+        .table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 4px 10px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+
+        .status-active {
+            background-color: #ecfdf3;
+            color: #027a48;
+        }
+
+        .status-inactive {
+            background-color: #f9fafb;
+            color: #667085;
+        }
+
+        .action-link {
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-decoration: none;
+            margin-left: 12px;
+        }
+
+        .action-view {
+            color: #007bff;
+        }
+
+        .action-edit {
+            color: #007bff;
+        }
+
+        .action-delete {
+            color: #f56c6c;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-main">
+        <div class="header-section">
+            <div>
+                <h1 class="page-title">Questionnaires panel</h1>
+                <p class="page-desc">Questionnaires are the health assessments that will appear in the profile and
+                    provide points</p>
+            </div>
+            <a href="{% url 'questionnaire_create' %}" class="btn-create">Create new questionnaire</a>
+        </div>
+
+        <!-- Filters -->
+        <div class="filter-card">
+            <form method="get">
+                <div class="search-row">
+                    <div class="search-input-wrapper">
+                        <i class="bi bi-search"></i>
+                        <input type="text" name="search" class="search-input" placeholder="Search"
+                            value="{{ request.GET.search }}">
+                    </div>
+                    <button type="submit" class="btn-search">Search</button>
+                </div>
+
+                <div class="filter-row">
+                    <div class="filter-group">
+                        <label class="filter-label">Publication status</label>
+                        <select name="status" class="form-select">
+                            <option value="">Any</option>
+                            <option value="active" {% if request.GET.status == 'active' %}selected{% endif %}>Active
+                            </option>
+                            <option value="inactive" {% if request.GET.status == 'inactive' %}selected{% endif %}>Inactive
+                            </option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">Created at</label>
+                        <input type="date" name="date_from" class="form-control" value="{{ request.GET.date_from }}">
+                    </div>
+                    <div class="filter-group">
+                        <label class="filter-label">To</label>
+                        <input type="date" name="date_to" class="form-control" value="{{ request.GET.date_to }}">
+                    </div>
+                    <div style="width: 60px; text-align: right;">
+                        <a href="?" class="clear-link">Clear</a>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <!-- List -->
+        <div class="list-header">
+            <h2 class="list-title">Questionnaires</h2>
+            <div class="dropdown">
+                <button class="sort-btn" type="button" data-bs-toggle="dropdown">
+                    Sort by <i class="bi bi-chevron-down"></i>
+                </button>
+                <ul class="dropdown-menu">
+                    <li><a class="dropdown-item" href="?sort=newest">Newest first</a></li>
+                    <li><a class="dropdown-item" href="?sort=oldest">Oldest first</a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="table-card">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Status</th>
+                        <th>Created</th>
+                        <th>Last Update</th>
+                        <th style="text-align: right;">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in questionnaires %}
+                    <tr>
+                        <td style="font-weight: 600;">{{ item.title }}</td>
+                        <td>
+                            <span class="status-badge status-{{ item.status }}">
+                                {{ item.status|title }}
+                            </span>
+                        </td>
+                        <td style="color: #697386;">{{ item.created_at|date:"M d, Y, H:i" }}</td>
+                        <td style="color: #697386;">{{ item.updated_at|date:"M d, Y, H:i" }}</td>
+                        <td style="text-align: right;">
+                            <a href="#" class="action-link action-view">View</a>
+                            <a href="{% url 'questionnaire_update' item.pk %}" class="action-link action-edit">Edit</a>
+                            <a href="#" class="action-link action-delete"
+                                onclick="if(confirm('Delete this?')) { document.getElementById('delete-form-{{item.pk}}').submit(); } return false;">Delete</a>
+                            <form id="delete-form-{{item.pk}}" action="{% url 'questionnaire_delete' item.pk %}"
+                                method="post" style="display: none;">
+                                {% csrf_token %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="text-center py-5" style="color: #909399;">No questionnaires found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+
+</html>

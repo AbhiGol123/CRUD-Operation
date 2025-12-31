@@ -21,6 +21,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('items.urls')),
     path('api/', include('items.api_urls')),
+    path('questionnaires/', include('questionnaires.urls')),
 ]
 
 from django.conf import settings

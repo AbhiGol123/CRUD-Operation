@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'items',
     'rest_framework',
+    'questionnaires',
 ]
 
 REST_FRAMEWORK = {

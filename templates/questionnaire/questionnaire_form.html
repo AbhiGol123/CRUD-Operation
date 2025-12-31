@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create new questionnaire</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            color: #333;
+            padding-bottom: 100px;
+        }
+
+        .container-main {
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .page-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1a1f36;
+            margin-bottom: 20px;
+        }
+
+        .breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin-bottom: 30px;
+            font-size: 0.85rem;
+        }
+
+        .breadcrumb-item a {
+            color: #697386;
+            text-decoration: none;
+        }
+
+        .breadcrumb-item.active {
+            color: #007bff;
+        }
+
+        .card {
+            border: 1px solid #e3e8ee;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            background-color: #fff;
+            border-bottom: 1px solid #e3e8ee;
+            padding: 15px 20px;
+            font-weight: 600;
+            color: #4f566b;
+            font-size: 0.9rem;
+        }
+
+        .form-label {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #4f566b;
+            margin-bottom: 8px;
+        }
+
+        .form-control,
+        .form-select {
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            padding: 10px 12px;
+            font-size: 0.9rem;
+        }
+
+        .form-control:focus {
+            border-color: #007bff;
+            box-shadow: 0 0 0 3px rgba(0, 123, 255, 0.1);
+        }
+
+        .image-upload-box {
+            border: 1px dashed #dcdfe6;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.2s;
+            min-height: 250px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .image-upload-box:hover {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+
+        .image-upload-box i {
+            font-size: 2.5rem;
+            color: #909399;
+            margin-bottom: 15px;
+        }
+
+        .image-upload-text {
+            color: #606266;
+            font-size: 0.85rem;
+            margin-bottom: 5px;
+        }
+
+        .image-upload-box img {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            object-fit: contain;
+        }
+
+        .image-upload-subtext {
+            color: #909399;
+            font-size: 0.75rem;
+            margin-bottom: 15px;
+        }
+
+        .btn-browse {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .char-counter {
+            font-size: 0.75rem;
+            color: #909399;
+            text-align: right;
+            margin-top: 5px;
+        }
+
+        label span.required {
+            color: #f56c6c;
+        }
+
+        /* Dynamic Questions Styles */
+        .question-card {
+            border: 1px solid #e3e8ee;
+            border-radius: 8px;
+            background: #fff;
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+
+        .question-header {
+            background-color: #fff;
+            padding: 12px 20px;
+            border-bottom: 1px solid #e3e8ee;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: #4f566b;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .option-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 12px;
+        }
+
+        .emoji-btn {
+            width: 42px;
+            height: 42px;
+            border: 1px solid #dcdfe6;
+            border-radius: 6px;
+            background: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            flex-shrink: 0;
+        }
+
+        .emoji-btn:hover {
+            border-color: #007bff;
+            background-color: #f0f7ff;
+        }
+
+        .remove-link {
+            color: #f56c6c;
+            font-size: 0.85rem;
+            text-decoration: none;
+            cursor: pointer;
+            white-space: nowrap;
+        }
+
+        .remove-link:hover {
+            text-decoration: underline;
+        }
+
+        .add-option-wrapper {
+            border: 1px solid #007bff;
+            border-radius: 6px;
+            text-align: center;
+            padding: 10px;
+            margin-top: 15px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-option-wrapper:hover {
+            background-color: #f0f7ff;
+        }
+
+        .add-option-wrapper span {
+            color: #007bff;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-add-question {
+            background-color: #4b49ac;
+            color: #fff;
+            border: none;
+            padding: 10px 24px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            float: right;
+            margin-top: -10px;
+            margin-bottom: 30px;
+        }
+
+        .btn-add-question:hover {
+            background-color: #3f3e91;
+            color: #fff;
+        }
+
+        /* Publishing Footer Section */
+        .publishing-card {
+            margin-top: 40px;
+        }
+
+        .publishing-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 12px;
+            padding: 15px 20px;
+        }
+
+        .btn-draft {
+            background-color: #fff;
+            border: 1px solid #dcdfe6;
+            color: #4f566b;
+            padding: 8px 20px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        .btn-publish {
+            background-color: #4b49ac;
+            border: none;
+            color: #fff;
+            padding: 8px 24px;
+            border-radius: 6px;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+
+        emoji-picker {
+            position: fixed;
+            z-index: 10000;
+            display: none;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            border-radius: 12px;
+            border: 1px solid #e3e8ee;
+        }
+
+        emoji-picker.shown {
+            display: block;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container-main">
+        <h1 class="page-title">Create new questionnaire</h1>
+
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="#"><i class="bi bi-house-door"></i> Home</a></li>
+                <li class="breadcrumb-item"><a href="#">Content</a></li>
+                <li class="breadcrumb-item"><a href="#">Questionnaires</a></li>
+                <li class="breadcrumb-item active" aria-current="page">Create new questionnaire</li>
+            </ol>
+        </nav>
+
+        <form method="post" enctype="multipart/form-data" id="questionnaire-form">
+            {% csrf_token %}
+            <input type="hidden" name="questions_json" id="questions_json">
+
+            <div class="card">
+                <div class="card-header">
+                    Questionnaire content
+                </div>
+                <div class="card-body p-4">
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label"><span class="required">*</span>Title</label>
+                            {{ form.title }}
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <div class="image-upload-box" onclick="document.getElementById('id_image').click();"
+                                id="image-drop-zone">
+                                <div id="image-preview-wrapper" {% if not form.instance.image %}style="display: none;"{% endif %}>
+                                    <img src="{% if form.instance.image %}{{ form.instance.image.url }}{% endif %}"
+                                        id="image-preview-img">
+                                </div>
+                                <div id="upload-placeholder" {% if form.instance.image %}style="display: none;" {% endif %}>
+                                    <i class="bi bi-image"></i>
+                                    <div class="image-upload-text">Click to upload or drag and drop</div>
+                                    <div class="image-upload-subtext">SVG, PNG, JPG or GIF (max 800x800px)</div>
+                                </div>
+                                <button type="button" class="btn-browse">Browse File</button>
+                                <div style="display: none;">
+                                    {{ form.image }}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label"><span class="required">*</span>Description</label>
+                            {{ form.description }}
+                            <div class="char-counter"><span id="desc-count">0</span>/500</div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col-12">
+                            <label class="form-label"><span class="required">*</span>Final Statement</label>
+                            {{ form.final_statement }}
+                            <div class="char-counter"><span id="final-count">0</span>/300</div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-12">
+                            <label class="form-label">Status</label>
+                            {{ form.status }}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Dynamic Questions -->
+            <div id="questions-container"></div>
+
+            <div class="clearfix">
+                <button type="button" class="btn btn-add-question" onclick="addQuestion()">Add Question</button>
+            </div>
+
+            <!-- Publishing Card -->
+            <div class="card publishing-card">
+                <div class="card-header">
+                    Publishing
+                </div>
+                <div class="card-body p-0">
+                    <div class="publishing-footer">
+                        <button type="submit" name="save_draft" class="btn btn-draft">Save as draft</button>
+                        <button type="submit" name="publish" class="btn btn-publish">Publish now</button>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Character counters
+        const descInput = document.getElementById('id_description');
+        const descCount = document.getElementById('desc-count');
+        const finalInput = document.getElementById('id_final_statement');
+        const finalCount = document.getElementById('final-count');
+
+        descInput.addEventListener('input', function () { descCount.textContent = this.value.length; });
+        finalInput.addEventListener('input', function () { finalCount.textContent = this.value.length; });
+
+        // Image handling
+        const imageInput = document.getElementById('id_image');
+        const imagePreviewImg = document.getElementById('image-preview-img');
+        const previewWrapper = document.getElementById('image-preview-wrapper');
+        const placeholder = document.getElementById('upload-placeholder');
+
+        imageInput.addEventListener('change', function () {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    imagePreviewImg.src = e.target.result;
+                    previewWrapper.style.display = 'block';
+                    placeholder.style.display = 'none';
+                    document.querySelector('.image-upload-text').textContent = "Selected: " + imageInput.files[0].name;
+                }
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+
+        /* ---------- Dynamic Questions Logic ---------- */
+        let questionsData = {{ questions_data| safe }};
+        const container = document.getElementById('questions-container');
+        const hiddenInput = document.getElementById('questions_json');
+
+        const picker = document.createElement('emoji-picker');
+        document.body.appendChild(picker);
+        let currentEmojiBtn = null;
+
+        picker.addEventListener('emoji-click', event => {
+            if (currentEmojiBtn) {
+                currentEmojiBtn.innerText = event.detail.unicode;
+                picker.classList.remove('shown');
+            }
+        });
+
+        document.addEventListener('click', (e) => {
+            if (!picker.contains(e.target) && !e.target.closest('.emoji-btn')) {
+                picker.classList.remove('shown');
+            }
+        });
+
+        window.toggleEmojiPicker = (event, button) => {
+            event.stopPropagation();
+            currentEmojiBtn = button;
+            const rect = button.getBoundingClientRect();
+            const pickerHeight = 400;
+            const pickerWidth = 300;
+
+            let top = rect.bottom + 5;
+            if (top + pickerHeight > window.innerHeight) {
+                top = rect.top - pickerHeight - 5;
+            }
+
+            picker.style.top = top + 'px';
+            picker.style.left = rect.left + 'px';
+            picker.style.width = pickerWidth + 'px';
+            picker.style.height = pickerHeight + 'px';
+            picker.classList.toggle('shown');
+        };
+
+        function renderQuestions() {
+            container.innerHTML = '';
+            questionsData.forEach((q, qi) => {
+                const card = document.createElement('div');
+                card.className = 'question-card';
+
+                let optionsHtml = q.options.map((o, oi) => `
+                <div class="option-row">
+                    <label class="form-label mb-0" style="width: 80px;"><span class="required">*</span>Option ${oi + 1}</label>
+                    <div class="emoji-btn" onclick="toggleEmojiPicker(event, this)">${o.emoji || '😊'}</div>
+                    <input class="form-control opt-text" value="${o.text || ''}" placeholder="Enter option">
+                    ${q.options.length > 2 ? `<span class="remove-link" onclick="removeOption(${qi},${oi})">Remove</span>` : '<span style="width: 52px;"></span>'}
+                </div>
+            `).join('');
+
+                card.innerHTML = `
+                <div class="question-header">
+                    <span>Question ${qi + 1}</span>
+                    ${questionsData.length > 1 ? `<span class="remove-link" onclick="removeQuestion(${qi})">Remove Question</span>` : ''}
+                </div>
+                <div class="card-body p-4">
+                    <div class="mb-4">
+                        <label class="form-label"><span class="required">*</span>Question</label>
+                        <input class="form-control q-text" value="${q.text || ''}" placeholder="Enter your question">
+                    </div>
+                    <div class="options-list">
+                        ${optionsHtml}
+                    </div>
+                    <div class="add-option-wrapper" onclick="addOption(${qi})">
+                        <span>Add option answer</span>
+                    </div>
+                </div>
+            `;
+                container.appendChild(card);
+            });
+        }
+
+        function saveDom() {
+            const newData = [];
+            document.querySelectorAll('.question-card').forEach(card => {
+                const options = [];
+                card.querySelectorAll('.option-row').forEach(row => {
+                    options.push({
+                        emoji: row.querySelector('.emoji-btn').innerText,
+                        text: row.querySelector('.opt-text').value
+                    });
+                });
+                newData.push({
+                    emoji: '❓',
+                    text: card.querySelector('.q-text').value,
+                    options: options
+                });
+            });
+            questionsData = newData;
+        }
+
+        window.addQuestion = () => {
+            saveDom();
+            questionsData.push({
+                text: '',
+                emoji: '❓',
+                options: [{ emoji: '😊', text: '' }, { emoji: '😊', text: '' }]
+            });
+            renderQuestions();
+        };
+
+        window.removeQuestion = (i) => {
+            saveDom();
+            questionsData.splice(i, 1);
+            renderQuestions();
+        };
+
+        window.addOption = (i) => {
+            saveDom();
+            questionsData[i].options.push({ emoji: '😊', text: '' });
+            renderQuestions();
+        };
+
+        window.removeOption = (qi, oi) => {
+            saveDom();
+            questionsData[qi].options.splice(oi, 1);
+            renderQuestions();
+        };
+
+        document.getElementById('questionnaire-form').onsubmit = function () {
+            saveDom();
+            hiddenInput.value = JSON.stringify(questionsData);
+        };
+
+        if (questionsData.length === 0) addQuestion();
+        else renderQuestions();
+
+    </script>
+
+</body>
+
+</html>
